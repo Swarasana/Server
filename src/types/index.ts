@@ -37,8 +37,8 @@ export interface Collection {
   id: string;
   name: string;
   picture_url: string;
-  curator_name: string;
-  curator_explanation: string;
+  artist_name: string;
+  artist_explanation: string;
   ai_summary_text: string;
   created_at: string;
   updated_at: string;
@@ -59,7 +59,8 @@ export interface Exhibition {
   id: string;
   name: string;
   description: string;
-  owner_name: string;
+  curator_id: string;
+  curator_name: string;
   created_at: string;
   updated_at: string;
 }
