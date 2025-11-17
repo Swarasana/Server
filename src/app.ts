@@ -7,6 +7,10 @@ import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 
+import collectionsRoutes from './routes/collections';
+import commentsRoutes from './routes/comments';
+import exhibitionsRoutes from './routes/exhibitions';
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +28,10 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use('/api/collections', collectionsRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/exhibitions', exhibitionsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
