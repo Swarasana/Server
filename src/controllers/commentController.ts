@@ -1,17 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { CommentService } from '../services/commentService';
 import { ApiResponse } from '../types';
+import { BadRequestError, NotFoundError } from '../utils/errors';
 
 export const likeComment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Comment ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Comment ID is required');
     }
     
     const comment = await CommentService.likeComment(id);
@@ -32,23 +28,13 @@ export const getCommentText = async (req: Request, res: Response, next: NextFunc
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Comment ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Comment ID is required');
     }
     
     const commentText = await CommentService.getCommentText(id);
     
     if (!commentText) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Comment not found'
-      };
-      res.status(404).json(response);
-      return;
+      throw new NotFoundError('Comment');
     }
 
     const response: ApiResponse = {

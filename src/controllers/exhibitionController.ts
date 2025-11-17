@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ExhibitionService } from '../services/exhibitionService';
 import { ApiResponse, PaginationParams } from '../types';
+import { BadRequestError, NotFoundError } from '../utils/errors';
 
 export const getExhibitions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -32,23 +33,13 @@ export const getExhibition = async (req: Request, res: Response, next: NextFunct
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Exhibition ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Exhibition ID is required');
     }
     
     const exhibition = await ExhibitionService.getById(id);
     
     if (!exhibition) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Exhibition not found'
-      };
-      res.status(404).json(response);
-      return;
+      throw new NotFoundError('Exhibition');
     }
 
     const response: ApiResponse = {
@@ -67,12 +58,7 @@ export const getExhibitionCollections = async (req: Request, res: Response, next
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Exhibition ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Exhibition ID is required');
     }
 
     const { cursor, limit } = req.query;

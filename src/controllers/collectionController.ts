@@ -2,17 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { CollectionService } from '../services/collectionService';
 import { ApiResponse, PaginationParams } from '../types';
 import { generateGuestUsername } from '../utils/guestUser';
+import { BadRequestError, NotFoundError } from '../utils/errors';
 
 export const getCollection = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Collection ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Collection ID is required');
     }
 
     const userRole = req.headers['x-user-role'] as string || 'visitor';
@@ -20,12 +16,7 @@ export const getCollection = async (req: Request, res: Response, next: NextFunct
     const collection = await CollectionService.getById(id);
     
     if (!collection) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Collection not found'
-      };
-      res.status(404).json(response);
-      return;
+      throw new NotFoundError('Collection');
     }
 
     const responseData = {
@@ -96,12 +87,7 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
     const { username, user_pic_url, comment_text } = req.body;
 
     if (!comment_text?.trim()) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Comment text is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Comment text is required');
     }
 
     const finalUsername = username?.trim() || generateGuestUsername();
@@ -129,23 +115,13 @@ export const getAiSummary = async (req: Request, res: Response, next: NextFuncti
   try {
     const { id } = req.params;
     if (!id) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'Collection ID is required'
-      };
-      res.status(400).json(response);
-      return;
+      throw new BadRequestError('Collection ID is required');
     }
     
     const summaryText = await CollectionService.getAiSummary(id);
     
     if (!summaryText) {
-      const response: ApiResponse = {
-        success: false,
-        error: 'AI summary not found'
-      };
-      res.status(404).json(response);
-      return;
+      throw new NotFoundError('AI summary');
     }
 
     const response: ApiResponse = {

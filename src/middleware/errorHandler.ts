@@ -1,21 +1,38 @@
 import { Request, Response, NextFunction } from 'express';
-
-export interface CustomError extends Error {
-  statusCode?: number;
-}
+import { AppError } from '../utils/errors';
 
 export const errorHandler = (
-  err: CustomError,
+  err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  let statusCode = 500;
+  let message = 'Internal Server Error';
+
+  // Handle our custom AppError
+  if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  }
+  // Handle other known errors
+  else if (err.message.includes('not found')) {
+    statusCode = 404;
+    message = err.message;
+  }
+  // Handle validation errors from services
+  else if (err.message.includes('required')) {
+    statusCode = 400;
+    message = err.message;
+  }
+  else {
+    // Log unexpected errors
+    console.error('Unexpected error:', err);
+    message = process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error';
+  }
 
   console.error(`Error ${statusCode}: ${message}`);
-  console.error(err.stack);
-
+  
   res.status(statusCode).json({
     success: false,
     error: {
