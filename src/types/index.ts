@@ -28,9 +28,19 @@ export interface User {
   id: string;
   username: string;
   user_pic_url: string | null;
-  role: 'curator' | 'visitor';
+  role: "curator" | "visitor";
   created_at: string;
   updated_at: string;
+  display_name: string;
+  password: string;
+  points: number;
+  level_id: string;
+}
+
+export interface Level {
+  id: string;
+  level_name: string;
+  minimum_points: number;
 }
 
 export interface Collection {
