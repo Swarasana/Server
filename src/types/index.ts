@@ -15,6 +15,22 @@ export interface PaginationParams {
   limit?: number | undefined;
 }
 
+export interface SearchFilterParams extends PaginationParams {
+  q?: string; // Search query
+}
+
+export interface ExhibitionSearchParams extends SearchFilterParams {
+  curator?: string; // Filter by curator name
+}
+
+export interface CommentSearchParams extends SearchFilterParams {
+  // Just search, no additional filters needed
+}
+
+export interface CollectionSearchParams extends SearchFilterParams {
+  artist?: string; // Filter by artist name
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {

@@ -1,11 +1,11 @@
 import { supabase } from '../config/supabase';
-import { Comment, PaginationParams, PaginatedResponse } from '../types';
+import { Comment, CommentSearchParams, PaginatedResponse } from '../types';
 import { parseCursor, generateCursor, DEFAULT_LIMIT, MAX_LIMIT } from '../utils/pagination';
 
 export class CommentRepository {
   static async findByCollectionId(
     collectionId: string, 
-    params: PaginationParams
+    params: CommentSearchParams
   ): Promise<PaginatedResponse<Comment>> {
     const limit = Math.min(params.limit || DEFAULT_LIMIT, MAX_LIMIT);
     
@@ -17,6 +17,13 @@ export class CommentRepository {
       .order('id', { ascending: false })
       .limit(limit + 1);
 
+    // Apply search filter
+    if (params.q) {
+      const searchTerm = `%${params.q}%`;
+      query = query.or(`comment_text.ilike.${searchTerm},username.ilike.${searchTerm}`);
+    }
+
+    // Apply cursor pagination
     if (params.cursor) {
       const parsed = parseCursor(params.cursor);
       if (parsed) {

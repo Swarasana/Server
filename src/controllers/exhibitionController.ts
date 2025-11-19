@@ -1,21 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import { ExhibitionService } from '../services/exhibitionService';
-import { ApiResponse, PaginationParams } from '../types';
+import { ApiResponse, ExhibitionSearchParams, CollectionSearchParams } from '../types';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 
 export const getExhibitions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { cursor, limit } = req.query;
+    const { cursor, limit, q, curator } = req.query;
 
-    const paginationParams: PaginationParams = {
-      cursor: cursor as string
+    const searchParams: ExhibitionSearchParams = {
+      cursor: cursor as string,
+      q: q as string,
+      curator: curator as string
     };
     
     if (limit) {
-      paginationParams.limit = parseInt(limit as string);
+      searchParams.limit = parseInt(limit as string);
     }
 
-    const result = await ExhibitionService.getAll(paginationParams);
+    const result = await ExhibitionService.getAll(searchParams);
 
     const response: ApiResponse = {
       success: true,
@@ -61,17 +63,19 @@ export const getExhibitionCollections = async (req: Request, res: Response, next
       throw new BadRequestError('Exhibition ID is required');
     }
 
-    const { cursor, limit } = req.query;
+    const { cursor, limit, q, artist } = req.query;
 
-    const paginationParams: PaginationParams = {
-      cursor: cursor as string
+    const searchParams: CollectionSearchParams = {
+      cursor: cursor as string,
+      q: q as string,
+      artist: artist as string
     };
     
     if (limit) {
-      paginationParams.limit = parseInt(limit as string);
+      searchParams.limit = parseInt(limit as string);
     }
 
-    const result = await ExhibitionService.getCollections(id, paginationParams);
+    const result = await ExhibitionService.getCollections(id, searchParams);
 
     const response: ApiResponse = {
       success: true,

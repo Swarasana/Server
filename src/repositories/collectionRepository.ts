@@ -1,6 +1,5 @@
 import { supabase } from '../config/supabase';
-import { Collection, PaginationParams, PaginatedResponse } from '../types';
-import { parseCursor, generateCursor, DEFAULT_LIMIT, MAX_LIMIT } from '../utils/pagination';
+import { Collection } from '../types';
 
 export class CollectionRepository {
   static async findById(id: string): Promise<Collection | null> {

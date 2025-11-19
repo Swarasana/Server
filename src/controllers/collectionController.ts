@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CollectionService } from '../services/collectionService';
-import { ApiResponse, PaginationParams } from '../types';
+import { ApiResponse, CommentSearchParams } from '../types';
 import { generateGuestUsername } from '../utils/guestUser';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 
@@ -48,17 +48,18 @@ export const getCollectionComments = async (req: Request, res: Response, next: N
       return;
     }
 
-    const { cursor, limit } = req.query;
+    const { cursor, limit, q } = req.query;
 
-    const paginationParams: PaginationParams = {
-      cursor: cursor as string
+    const searchParams: CommentSearchParams = {
+      cursor: cursor as string,
+      q: q as string
     };
     
     if (limit) {
-      paginationParams.limit = parseInt(limit as string);
+      searchParams.limit = parseInt(limit as string);
     }
 
-    const result = await CollectionService.getComments(id, paginationParams);
+    const result = await CollectionService.getComments(id, searchParams);
 
     const response: ApiResponse = {
       success: true,
