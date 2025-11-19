@@ -11,6 +11,7 @@ import collectionsRoutes from "./routes/collections";
 import commentsRoutes from "./routes/comments";
 import exhibitionsRoutes from "./routes/exhibitions";
 import levelRoutes from "./routes/levels";
+import userRoutes from "./routes/users";
 
 dotenv.config();
 
@@ -71,6 +72,12 @@ app.get("/api", (_, res) => {
         "GET /api/levels/:id": "Get level details",
         "GET /api/levels/points/:points": "Get levels by points",
       },
+      users: {
+        "POST /api/users/register": "Register new user",
+        "POST /api/users/login": "Login to existing user account",
+        "GET /api/users/me": "Get user profile",
+        "PUT /api/users/me": "Update user profile",
+      },
     },
   });
 });
@@ -79,6 +86,7 @@ app.use("/api/collections", collectionsRoutes);
 app.use("/api/comments", commentsRoutes);
 app.use("/api/exhibitions", exhibitionsRoutes);
 app.use("/api/levels", levelRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
