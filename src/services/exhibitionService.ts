@@ -1,8 +1,8 @@
-import { Exhibition, Collection, PaginationParams, PaginatedResponse } from '../types';
+import { Exhibition, Collection, ExhibitionSearchParams, CollectionSearchParams, PaginatedResponse } from '../types';
 import { ExhibitionRepository } from '../repositories/exhibitionRepository';
 
 export class ExhibitionService {
-  static async getAll(params: PaginationParams): Promise<PaginatedResponse<Exhibition>> {
+  static async getAll(params: ExhibitionSearchParams): Promise<PaginatedResponse<Exhibition>> {
     return await ExhibitionRepository.findAll(params);
   }
 
@@ -12,7 +12,7 @@ export class ExhibitionService {
 
   static async getCollections(
     exhibitionId: string,
-    params: PaginationParams
+    params: CollectionSearchParams
   ): Promise<PaginatedResponse<Collection>> {
     // Check if exhibition exists first
     const exhibition = await ExhibitionRepository.findById(exhibitionId);

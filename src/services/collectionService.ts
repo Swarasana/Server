@@ -1,4 +1,4 @@
-import { Collection, Comment, PaginationParams, PaginatedResponse } from '../types';
+import { Collection, Comment, CommentSearchParams, PaginatedResponse } from '../types';
 import { CollectionRepository } from '../repositories/collectionRepository';
 import { CommentRepository } from '../repositories/commentRepository';
 
@@ -9,7 +9,7 @@ export class CollectionService {
 
   static async getComments(
     collectionId: string, 
-    params: PaginationParams
+    params: CommentSearchParams
   ): Promise<PaginatedResponse<Comment>> {
     // Check if collection exists first
     const collection = await CollectionRepository.findById(collectionId);
