@@ -71,25 +71,46 @@ export class ExhibitionRepository {
   ): Promise<PaginatedResponse<Collection>> {
     const limit = Math.min(params.limit || DEFAULT_LIMIT, MAX_LIMIT);
     
-    let query = supabase
+    // First, get all collection IDs from the exhibition
+    let collectionIdsQuery = supabase
       .from('exhibition_collections')
-      .select(`
-        collections (*)
-      `)
-      .eq('exhibition_id', exhibitionId)
+      .select('collection_id')
+      .eq('exhibition_id', exhibitionId);
+
+    const { data: collectionIds, error: idsError } = await collectionIdsQuery;
+    if (idsError) throw idsError;
+
+    if (!collectionIds || collectionIds.length === 0) {
+      return {
+        data: [],
+        pagination: {
+          nextCursor: null,
+          hasMore: false
+        }
+      };
+    }
+
+    // Extract just the IDs
+    const ids = collectionIds.map(item => item.collection_id);
+    
+    // Now query collections directly with filters
+    let query = supabase
+      .from('collections')
+      .select('*')
+      .in('id', ids)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
       .limit(limit + 1);
 
-    // Apply search filter on collections
+    // Apply search filter
     if (params.q) {
       const searchTerm = `%${params.q}%`;
-      query = query.or(`collections.name.ilike.${searchTerm},collections.artist_name.ilike.${searchTerm}`);
+      query = query.or(`name.ilike.${searchTerm},artist_name.ilike.${searchTerm}`);
     }
 
     // Apply artist filter
     if (params.artist) {
-      query = query.ilike('collections.artist_name', `%${params.artist}%`);
+      query = query.ilike('artist_name', `%${params.artist}%`);
     }
 
     // Apply cursor pagination
@@ -104,9 +125,8 @@ export class ExhibitionRepository {
     
     if (error) throw error;
 
-    const collections = data.map((item: any) => item.collections);
-    const hasMore = collections.length > limit;
-    const items = hasMore ? collections.slice(0, -1) : collections;
+    const hasMore = data.length > limit;
+    const items = hasMore ? data.slice(0, -1) : data;
     const nextCursor = hasMore && items.length > 0 
       ? generateCursor(items[items.length - 1]!.created_at, items[items.length - 1]!.id)
       : null;
