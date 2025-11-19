@@ -16,7 +16,7 @@ export class ExhibitionRepository {
     // Apply search filter
     if (params.q) {
       const searchTerm = `%${params.q}%`;
-      query = query.or(`name.ilike.${searchTerm},description.ilike.${searchTerm},curator_name.ilike.${searchTerm}`);
+      query = query.or(`name.ilike.${searchTerm},description.ilike.${searchTerm},curator_name.ilike.${searchTerm},location.ilike.${searchTerm}`);
     }
 
     // Apply curator filter

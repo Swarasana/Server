@@ -87,6 +87,8 @@ export interface Exhibition {
   description: string;
   curator_id: string;
   curator_name: string;
+  location: string;
+  image_url: string;
   created_at: string;
   updated_at: string;
 }
