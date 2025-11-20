@@ -13,10 +13,14 @@ export class UserController {
 
   static async login(req: Request, res: Response) {
     try {
-      const data = await UserService.login(
-        req.body.username,
-        req.body.password
-      );
+      if (!req.body) throw new Error("Missing request body");
+
+      const { username, password } = req.body;
+
+      if (!username || !password)
+        throw new Error("Username and password are required");
+
+      const data = await UserService.login(username, password);
       return res.json({ success: true, ...data });
     } catch (e: any) {
       return res.status(400).json({ success: false, message: e.message });

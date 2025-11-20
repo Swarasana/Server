@@ -1,19 +1,26 @@
-import { Level } from "../types";
+import crypto from "crypto";
 import bcrypt from "bcrypt";
-import { LevelRepository } from "../repositories/levelRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { generateToken } from "../utils/jwt";
 
 export class UserService {
   static async register(data: any) {
-    const existing = await UserRepository.findById(data.username);
+    const existing = await UserRepository.findByUsername(data.username);
     if (existing) throw new Error("Username already exists");
+
+    const id = crypto.randomUUID();
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await UserRepository.create({
-      ...data,
+      id: id,
+      username: data.username,
+      display_name: data.display_name,
+      user_pic_url: data.user_pic_url ?? null,
+      role: data.role ?? "visitor",
       password: hashedPassword,
+      points: 0,
+      level_id: data.level_id ?? null,
     });
 
     const token = generateToken(user.id);
