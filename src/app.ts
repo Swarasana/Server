@@ -51,7 +51,9 @@ app.get("/api", (_, res) => {
     },
     documentation: {
       collections: {
+        "POST /api/collections": "Create a new collection",
         "GET /api/collections/:id": "Get collection details",
+        "PUT /api/collections/:id": "Update collection details",
         "GET /api/collections/:id/comments":
           "Get collection comments (paginated)",
         "POST /api/collections/:id/comments": "Add comment to collection",
@@ -63,9 +65,15 @@ app.get("/api", (_, res) => {
       },
       exhibitions: {
         "GET /api/exhibitions": "Get all exhibitions (paginated)",
+        "POST /api/exhibitions": "Create a new exhibition",
         "GET /api/exhibitions/:id": "Get exhibition details",
+        "PUT /api/exhibitions/:id": "Update exhibition details",
         "GET /api/exhibitions/:id/collections":
           "Get collections in exhibition (paginated)",
+        "POST /api/exhibitions/:id/collections":
+          "Add a collection in exhibition",
+        "POST /api/exhibitions/:id/collections/bulk":
+          "Add collections (in bulk) in exhibition",
       },
       levels: {
         "GET /api/levels": "Get all levels",

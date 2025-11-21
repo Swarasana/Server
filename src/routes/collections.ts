@@ -1,16 +1,20 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   getCollection,
   getCollectionComments,
   addComment,
-  getAiSummary
-} from '../controllers/collectionController';
+  getAiSummary,
+  createCollection,
+  updateCollection,
+} from "../controllers/collectionController";
 
 const router = Router();
 
-router.get('/:id', getCollection);
-router.get('/:id/comments', getCollectionComments);
-router.post('/:id/comments', addComment);
-router.get('/:id/ai-summary', getAiSummary);
+router.post("/", createCollection);
+router.get("/:id", getCollection);
+router.put("/:id", updateCollection);
+router.get("/:id/comments", getCollectionComments);
+router.post("/:id/comments", addComment);
+router.get("/:id/ai-summary", getAiSummary);
 
 export default router;
