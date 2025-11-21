@@ -67,8 +67,18 @@ export interface Collection {
   artist_explanation: string;
   ai_summary_text: string;
   likes_count: number;
+  visitor_count: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface VisitorLog {
+  id: string;
+  collection_id: string;
+  visitor_fingerprint: string;
+  session_id: string | null;
+  visited_at: string;
+  created_at: string;
 }
 
 export interface Comment {
