@@ -37,6 +37,29 @@ export class CollectionRepository {
     return data;
   }
 
+  static async incrementLikes(collectionId: string): Promise<Collection> {
+    const { data: currentData, error: fetchError } = await supabase
+      .from("collections")
+      .select("likes_count")
+      .eq("id", collectionId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const { data, error } = await supabase
+      .from("collections")
+      .update({
+        likes_count: currentData.likes_count + 1,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", collectionId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
   static async getAiSummaryText(collectionId: string): Promise<string | null> {
     const { data, error } = await supabase
       .from("collections")

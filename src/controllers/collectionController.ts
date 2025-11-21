@@ -153,6 +153,31 @@ export const addComment = async (
   }
 };
 
+export const likeCollection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new BadRequestError("Collection ID is required");
+    }
+
+    const collection = await CollectionService.likeCollection(id);
+
+    const response: ApiResponse = {
+      success: true,
+      data: collection,
+      message: "Collection liked successfully",
+    };
+
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAiSummary = async (
   req: Request,
   res: Response,
