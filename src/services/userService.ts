@@ -23,8 +23,7 @@ export class UserService {
       level_id: data.level_id ?? null,
     });
 
-    const token = generateToken(user.id);
-    return { user, token };
+    return { user };
   }
 
   static async login(username: string, password: string) {
