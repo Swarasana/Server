@@ -38,4 +38,14 @@ export class CollectionService {
   static async getAiSummary(collectionId: string): Promise<string | null> {
     return await CollectionRepository.getAiSummaryText(collectionId);
   }
+
+  static async likeCollection(collectionId: string): Promise<Collection> {
+    // Check if collection exists first
+    const collection = await CollectionRepository.findById(collectionId);
+    if (!collection) {
+      throw new Error('Collection not found');
+    }
+
+    return await CollectionRepository.incrementLikes(collectionId);
+  }
 }

@@ -52,9 +52,9 @@ app.get("/api", (_, res) => {
     documentation: {
       collections: {
         "GET /api/collections/:id": "Get collection details",
-        "GET /api/collections/:id/comments":
-          "Get collection comments (paginated)",
+        "GET /api/collections/:id/comments": "Get collection comments (paginated)",
         "POST /api/collections/:id/comments": "Add comment to collection",
+        "PUT /api/collections/:id/like": "Like a collection",
         "GET /api/collections/:id/ai-summary": "Get AI summary for TTS",
       },
       comments: {
@@ -64,8 +64,7 @@ app.get("/api", (_, res) => {
       exhibitions: {
         "GET /api/exhibitions": "Get all exhibitions (paginated)",
         "GET /api/exhibitions/:id": "Get exhibition details",
-        "GET /api/exhibitions/:id/collections":
-          "Get collections in exhibition (paginated)",
+        "GET /api/exhibitions/:id/collections": "Get collections in exhibition (paginated)",
       },
       levels: {
         "GET /api/levels": "Get all levels",
