@@ -18,7 +18,7 @@ export class UserController {
       const { username, password } = req.body;
 
       if (!username || !password)
-        throw new Error("Username and password are required");
+        throw new Error("Masukkan username dan password Anda.");
 
       const data = await UserService.login(username, password);
       return res.json({ success: true, ...data });

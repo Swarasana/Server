@@ -28,10 +28,10 @@ export class UserService {
 
   static async login(username: string, password: string) {
     const user = await UserRepository.findByUsername(username);
-    if (!user) throw new Error("Invalid credentials");
+    if (!user) throw new Error("Username atau password salah");
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new Error("Invalid credentials");
+    if (!match) throw new Error("Username atau password salah");
 
     const token = generateToken(user.id);
     return { user, token };
