@@ -21,6 +21,7 @@ export interface SearchFilterParams extends PaginationParams {
 
 export interface ExhibitionSearchParams extends SearchFilterParams {
   curator?: string; // Filter by curator name
+  curatorId?: string; // Filter by curator ID
 }
 
 export interface CommentSearchParams extends SearchFilterParams {

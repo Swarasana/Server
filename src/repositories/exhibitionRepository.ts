@@ -39,6 +39,10 @@ export class ExhibitionRepository {
       query = query.ilike("curator_name", `%${params.curator}%`);
     }
 
+    if (params.curatorId) {
+      query = query.eq("curator_id", params.curatorId);
+    }
+
     // Apply cursor pagination
     if (params.cursor) {
       const parsed = parseCursor(params.cursor);

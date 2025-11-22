@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { UserRepository } from "../repositories/userRepository";
 import { generateToken } from "../utils/jwt";
 import { LevelRepository } from "../repositories/levelRepository";
+import { ExhibitionRepository } from "../repositories/exhibitionRepository";
 
 export class UserService {
   static async register(data: any) {
@@ -42,9 +43,13 @@ export class UserService {
 
     if (!user) return null;
 
-    const comments = await UserRepository.getUserComments(user.username);
+    let comments = null;
+    let level = null;
 
-    const level = await LevelRepository.getByPoints(user.points);
+    if (user.role == "visitor") {
+      comments = await UserRepository.getUserComments(user.username);
+      level = await LevelRepository.getByPoints(user.points);
+    }
 
     return {
       ...user,

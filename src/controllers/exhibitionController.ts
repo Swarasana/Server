@@ -13,12 +13,13 @@ export const getExhibitions = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { cursor, limit, q, curator } = req.query;
+    const { cursor, limit, q, curator, curatorId } = req.query;
 
     const searchParams: ExhibitionSearchParams = {
       cursor: cursor as string,
       q: q as string,
       curator: curator as string,
+      curatorId: curatorId as string,
     };
 
     if (limit) {
