@@ -38,7 +38,16 @@ export class UserService {
   }
 
   static async getProfile(userId: string) {
-    return await UserRepository.findById(userId);
+    const user = await UserRepository.findById(userId);
+
+    if (!user) return null;
+
+    const comments = await UserRepository.getUserComments(user.username);
+
+    return {
+      ...user,
+      comments,
+    };
   }
 
   static async editProfile(userId: string, data: any) {

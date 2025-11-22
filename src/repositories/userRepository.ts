@@ -1,5 +1,5 @@
 import { supabase } from "../config/supabase";
-import { User } from "../types";
+import { CommentCollection, User } from "../types";
 
 export class UserRepository {
   static async findByUsername(username: string): Promise<User | null> {
@@ -56,5 +56,47 @@ export class UserRepository {
     if (error) throw error;
 
     return data;
+  }
+
+  static async getUserComments(username: string): Promise<CommentCollection[]> {
+    const { data, error } = await supabase
+      .from("comments")
+      .select(
+        `
+          id,
+          comment_text,
+          likes_count,
+          collection:collection_id!inner (
+            id,
+            name,
+            exhibition_collections (
+              exhibition:exhibition_id (
+                location
+              )
+            )
+          )
+        `
+      )
+      .eq("username", username);
+
+    if (error) throw error;
+
+    return data.map((c) => {
+      const collection = Array.isArray(c.collection)
+        ? c.collection[0]
+        : c.collection;
+
+      const exhibitionCollection = collection?.exhibition_collections?.[0];
+      const exhibition = exhibitionCollection?.exhibition?.[0];
+
+      return {
+        id: c.id,
+        comment_text: c.comment_text,
+        likes_count: c.likes_count,
+        collection_id: collection?.id,
+        collection_name: collection?.name,
+        location: exhibition?.location ?? "",
+      };
+    });
   }
 }
