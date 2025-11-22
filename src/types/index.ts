@@ -92,6 +92,15 @@ export interface Comment {
   updated_at: string;
 }
 
+export interface CommentCollection {
+  id: string;
+  comment_text: string;
+  likes_count: number;
+  collection_id: string;
+  collection_name: string;
+  location: string;
+}
+
 export interface Exhibition {
   id: string;
   name: string;

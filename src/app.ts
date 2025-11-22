@@ -64,6 +64,8 @@ app.get("/api", (_, res) => {
       comments: {
         "PUT /api/comments/:id/like": "Like a comment",
         "GET /api/comments/:id/text": "Get comment text for TTS",
+        "GET /api/comments/:id/collection":
+          "Get comment and its collection info",
       },
       exhibitions: {
         "GET /api/exhibitions": "Get all exhibitions (paginated)",
