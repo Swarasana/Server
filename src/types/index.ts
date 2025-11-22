@@ -98,7 +98,7 @@ export interface CommentCollection {
   likes_count: number;
   collection_id: string;
   collection_name: string;
-  location: string;
+  exhibition_name: string;
 }
 
 export interface Exhibition {

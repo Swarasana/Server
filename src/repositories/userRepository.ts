@@ -66,12 +66,12 @@ export class UserRepository {
           id,
           comment_text,
           likes_count,
-          collection:collection_id!inner (
+          collections:collection_id!inner (
             id,
             name,
             exhibition_collections (
-              exhibition:exhibition_id (
-                location
+              exhibitions:exhibition_id!inner (
+                name
               )
             )
           )
@@ -81,13 +81,24 @@ export class UserRepository {
 
     if (error) throw error;
 
-    return data.map((c) => {
-      const collection = Array.isArray(c.collection)
-        ? c.collection[0]
-        : c.collection;
+    console.log(JSON.stringify(data, null, 2));
 
-      const exhibitionCollection = collection?.exhibition_collections?.[0];
-      const exhibition = exhibitionCollection?.exhibition?.[0];
+    return data.map((c) => {
+      const collection = Array.isArray(c.collections)
+        ? c.collections[0]
+        : c.collections;
+
+      const exhibitionCollection = Array.isArray(
+        collection?.exhibition_collections
+      )
+        ? collection.exhibition_collections[0]
+        : collection?.exhibition_collections;
+
+      const exhibition = Array.isArray(exhibitionCollection?.exhibitions)
+        ? exhibitionCollection?.exhibitions[0]
+        : exhibitionCollection?.exhibitions;
+
+      const exhibitionName = exhibition?.name ?? "";
 
       return {
         id: c.id,
@@ -95,7 +106,7 @@ export class UserRepository {
         likes_count: c.likes_count,
         collection_id: collection?.id,
         collection_name: collection?.name,
-        location: exhibition?.location ?? "",
+        exhibition_name: exhibitionName,
       };
     });
   }

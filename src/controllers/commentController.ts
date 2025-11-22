@@ -56,30 +56,3 @@ export const getCommentText = async (
     next(error);
   }
 };
-
-export const getCommentCollection = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      throw new BadRequestError("Comment ID is required");
-    }
-    const commentCollection = await CommentService.getCommentCollection(id);
-    if (!commentCollection) {
-      throw new NotFoundError("Comment");
-    }
-
-    const response: ApiResponse = {
-      success: true,
-      data: commentCollection,
-      message: "Comment and collection fetched successfully",
-    };
-
-    res.json(response);
-  } catch (error) {
-    next(error);
-  }
-};

@@ -15,10 +15,4 @@ export class CommentService {
   static async getCommentText(commentId: string): Promise<string | null> {
     return await CommentRepository.getCommentText(commentId);
   }
-
-  static async getCommentCollection(
-    commentId: string
-  ): Promise<CommentCollection | null> {
-    return await CommentRepository.getCommentCollection(commentId);
-  }
 }
