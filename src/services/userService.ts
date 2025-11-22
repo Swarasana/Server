@@ -2,6 +2,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { UserRepository } from "../repositories/userRepository";
 import { generateToken } from "../utils/jwt";
+import { LevelRepository } from "../repositories/levelRepository";
 
 export class UserService {
   static async register(data: any) {
@@ -20,7 +21,6 @@ export class UserService {
       role: data.role ?? "visitor",
       password: hashedPassword,
       points: 0,
-      level_id: data.level_id ?? null,
     });
 
     return { user };
@@ -44,8 +44,11 @@ export class UserService {
 
     const comments = await UserRepository.getUserComments(user.username);
 
+    const level = await LevelRepository.getByPoints(user.points);
+
     return {
       ...user,
+      level,
       comments,
     };
   }

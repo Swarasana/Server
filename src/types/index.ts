@@ -50,13 +50,23 @@ export interface User {
   display_name: string;
   password: string;
   points: number;
-  level_id: string;
 }
 
 export interface Level {
   id: string;
+  level_number: number;
   level_name: string;
   minimum_points: number;
+  desc: string;
+  avatar_url: string;
+}
+
+export interface Merch {
+  id: number;
+  name: string;
+  desc: string;
+  price: number;
+  exhibition: string;
 }
 
 export interface Collection {

@@ -13,6 +13,7 @@ import exhibitionsRoutes from "./routes/exhibitions";
 import levelRoutes from "./routes/levels";
 import userRoutes from "./routes/users";
 import visitorsRoutes from "./routes/visitors";
+import merchRoutes from "./routes/merch";
 
 dotenv.config();
 
@@ -98,6 +99,9 @@ app.get("/api", (_, res) => {
           "Get visit analytics (curator only)",
         "GET /api/visitors/trending": "Get trending collections",
       },
+      merch: {
+        "GET /api/merch": "Get all merchandises",
+      },
     },
   });
 });
@@ -108,6 +112,7 @@ app.use("/api/exhibitions", exhibitionsRoutes);
 app.use("/api/levels", levelRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/visitors", visitorsRoutes);
+app.use("/api/merch", merchRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
