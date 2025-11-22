@@ -7,6 +7,9 @@ import {
 import { CollectionRepository } from "../repositories/collectionRepository";
 import { CommentRepository } from "../repositories/commentRepository";
 
+import QRCode from "qrcode";
+import { supabase } from "../config/supabase";
+
 export class CollectionService {
   static async getById(id: string): Promise<Collection | null> {
     return await CollectionRepository.findById(id);
@@ -14,6 +17,25 @@ export class CollectionService {
 
   static async create(body: any) {
     const id = crypto.randomUUID();
+
+    const qrLink = `${process.env.FRONTEND_URL}/collection/${id}`;
+    const qrBuffer = await QRCode.toBuffer(qrLink, { type: "png" });
+
+    const fileName = `collection_${id}.png`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("qr-codes")
+      .upload(fileName, qrBuffer, {
+        contentType: "image/png",
+        upsert: true,
+      });
+
+    if (uploadError) console.log(uploadError);
+    if (uploadError) throw uploadError;
+
+    const qrUrl = supabase.storage.from("qr-codes").getPublicUrl(fileName)
+      .data.publicUrl;
+
     return await CollectionRepository.create({
       id,
       name: body.name,
@@ -21,6 +43,7 @@ export class CollectionService {
       artist_name: body.artist_name,
       artist_explanation: body.artist_explanation,
       ai_summary_text: body.ai_summary_text,
+      qr_code_url: qrUrl,
     });
   }
 
