@@ -28,7 +28,8 @@ export class VisitorService {
   static async recordVisit(
     collectionId: string, 
     req: Request, 
-    sessionId?: string
+    sessionId?: string,
+    userId?: string
   ): Promise<{ isNewVisit: boolean; totalCount: number }> {
     try {
       const fingerprint = this.generateVisitorFingerprint(req);
@@ -37,7 +38,8 @@ export class VisitorService {
       const visitorLog = await VisitorRepository.createVisitorLog(
         collectionId, 
         fingerprint, 
-        sessionId
+        sessionId,
+        userId
       );
 
       let isNewVisit = false;
@@ -124,5 +126,15 @@ export class VisitorService {
     recent_visits: number;
   }>> {
     return await VisitorRepository.getTrendingCollections(limit, 3);
+  }
+
+  /**
+   * Get collections visited by a specific user (authenticated users only)
+   */
+  static async getUserVisitedCollections(
+    userId: string,
+    limit: number = 50
+  ) {
+    return await VisitorRepository.getUserVisitedCollections(userId, limit);
   }
 }

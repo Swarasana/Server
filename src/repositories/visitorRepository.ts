@@ -1,21 +1,24 @@
 import { supabase } from '../config/supabase';
-import { VisitorLog } from '../types';
+import { VisitorLog, UserVisitedCollection } from '../types';
 
 export class VisitorRepository {
   /**
    * Create a visitor log entry (with deduplication via UNIQUE constraint)
+   * Supports both authenticated and anonymous users
    */
   static async createVisitorLog(
     collectionId: string,
     visitorFingerprint: string,
-    sessionId?: string
+    sessionId?: string,
+    userId?: string
   ): Promise<VisitorLog | null> {
     const { data, error } = await supabase
       .from('visitor_logs')
       .insert({
         collection_id: collectionId,
         visitor_fingerprint: visitorFingerprint,
-        session_id: sessionId || null
+        session_id: sessionId || null,
+        user_id: userId || null
       })
       .select()
       .single();
@@ -126,5 +129,48 @@ export class VisitorRepository {
       .map(([collection_id, recent_visits]) => ({ collection_id, recent_visits }))
       .sort((a, b) => b.recent_visits - a.recent_visits)
       .slice(0, limit);
+  }
+
+  /**
+   * Get collections visited by a specific user (authenticated users only)
+   */
+  static async getUserVisitedCollections(
+    userId: string,
+    limit: number = 50
+  ): Promise<UserVisitedCollection[]> {
+    const { data, error } = await supabase
+      .from('visitor_logs')
+      .select(`
+        visited_at,
+        collections!inner (
+          id,
+          name,
+          picture_url,
+          artist_name
+        )
+      `)
+      .eq('user_id', userId)
+      .order('visited_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    // Transform the data and deduplicate by collection ID (keep most recent visit)
+    const visitedCollections = new Map<string, UserVisitedCollection>();
+    
+    data.forEach((visit: any) => {
+      const collection = visit.collections;
+      if (collection && !visitedCollections.has(collection.id)) {
+        visitedCollections.set(collection.id, {
+          id: collection.id,
+          name: collection.name,
+          picture_url: collection.picture_url,
+          artist_name: collection.artist_name,
+          visited_at: visit.visited_at
+        });
+      }
+    });
+
+    return Array.from(visitedCollections.values());
   }
 }

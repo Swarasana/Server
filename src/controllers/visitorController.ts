@@ -12,7 +12,8 @@ export const recordVisit = async (req: Request, res: Response, next: NextFunctio
 
     const { session_id } = req.body;
 
-    const result = await VisitorService.recordVisit(id, req, session_id);
+    const userId = (req as any).userId; // Get user ID from auth middleware (optional)
+    const result = await VisitorService.recordVisit(id, req, session_id, userId);
 
     const response: ApiResponse = {
       success: true,
@@ -92,6 +93,32 @@ export const getTrendingCollections = async (req: Request, res: Response, next: 
         trending
       },
       message: 'Trending collections fetched successfully'
+    };
+    
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserVisitedCollections = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as any).userId; // Get user ID from auth middleware
+    if (!userId) {
+      throw new BadRequestError('Authentication required');
+    }
+
+    const { limit } = req.query;
+    const limitNum = limit ? parseInt(limit as string) : 50;
+
+    const visitedCollections = await VisitorService.getUserVisitedCollections(userId, limitNum);
+
+    const response: ApiResponse = {
+      success: true,
+      data: {
+        visitedCollections
+      },
+      message: 'User visited collections fetched successfully'
     };
     
     res.json(response);

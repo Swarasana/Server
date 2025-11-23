@@ -89,8 +89,18 @@ export interface VisitorLog {
   collection_id: string;
   visitor_fingerprint: string;
   session_id: string | null;
+  user_id: string | null;
   visited_at: string;
+  visited_date: string;
   created_at: string;
+}
+
+export interface UserVisitedCollection {
+  id: string;
+  name: string;
+  picture_url: string;
+  artist_name: string;
+  visited_at: string;
 }
 
 export interface Comment {
