@@ -88,7 +88,7 @@ export const sttProxyHandler = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (!req.file) {
+    if (!(req as any).file) {
       const response: ApiResponse = {
         success: false,
         error: "Audio file is required",
@@ -110,9 +110,9 @@ export const sttProxyHandler = async (
     
     // Append file buffer - form-data expects Buffer or Stream
     // Important: Don't use Buffer.from() here, use the buffer directly
-    formData.append("file", req.file.buffer, {
-      filename: req.file.originalname || "audio.ogg",
-      contentType: req.file.mimetype || "audio/ogg",
+    formData.append("file", (req as any).file.buffer, {
+      filename: (req as any).file.originalname || "audio.ogg",
+      contentType: (req as any).file.mimetype || "audio/ogg",
     });
     
     // Append other form fields - only send encoding if provided
