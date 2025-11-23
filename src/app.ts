@@ -14,6 +14,7 @@ import levelRoutes from "./routes/levels";
 import userRoutes from "./routes/users";
 import visitorsRoutes from "./routes/visitors";
 import merchRoutes from "./routes/merch";
+import aiRoutes from "./routes/ai";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(cors());
 app.use(morgan("combined"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+// Note: Multer will handle multipart/form-data for /api/ai/stt
 
 app.get("/", (_, res) => {
   res.json({
@@ -113,6 +115,7 @@ app.use("/api/levels", levelRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/visitors", visitorsRoutes);
 app.use("/api/merch", merchRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
