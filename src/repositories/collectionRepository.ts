@@ -73,4 +73,41 @@ export class CollectionRepository {
     }
     return data?.ai_summary_text || null;
   }
+
+  static async getAiSummaryMeta(
+    collectionId: string
+  ): Promise<{
+    ai_summary_text: string | null;
+    last_summary_generated_at: string | null;
+  } | null> {
+    const { data, error } = await supabase
+      .from("collections")
+      .select("ai_summary_text, last_summary_generated_at")
+      .eq("id", collectionId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") return null; // Not found
+      throw error;
+    }
+    return data;
+  }
+
+  static async getLatestCommentTimestamp(
+    collectionId: string
+  ): Promise<string | null> {
+    const { data, error } = await supabase
+      .from("comments")
+      .select("created_at")
+      .eq("collection_id", collectionId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") return null; // No comments
+      throw error;
+    }
+    return data?.created_at || null;
+  }
 }

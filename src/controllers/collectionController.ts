@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CollectionService } from "../services/collectionService";
+import { CollectionRepository } from "../repositories/collectionRepository";
 import { ApiResponse, CommentSearchParams } from "../types";
 import { generateGuestUsername } from "../utils/guestUser";
 import { BadRequestError, NotFoundError } from "../utils/errors";
@@ -189,11 +190,61 @@ export const getAiSummary = async (
       throw new BadRequestError("Collection ID is required");
     }
 
-    const summaryText = await CollectionService.getAiSummary(id);
+    // Check if force refresh or wait is requested
+    const forceRefresh = req.query.refresh === "true";
+    const waitForGeneration = req.query.wait === "true";
 
-    if (!summaryText) {
-      throw new NotFoundError("AI summary");
+    // If wait is requested, use sync method (wait for generation)
+    if (waitForGeneration) {
+      const summaryText = await CollectionService.getAiSummarySync(id);
+      
+      if (!summaryText) {
+        throw new NotFoundError("AI summary");
+      }
+
+      const response: ApiResponse = {
+        success: true,
+        data: { text: summaryText },
+        message: "AI summary fetched successfully",
+      };
+
+      res.json(response);
+      return;
     }
+
+    // Get summary metadata first to check if summary exists
+    const meta = await CollectionRepository.getAiSummaryMeta(id);
+    const hasSummary = meta?.ai_summary_text && meta.ai_summary_text.trim() !== "";
+
+    // If no summary exists yet, wait for generation (first time)
+    if (!hasSummary) {
+      // Wait for generation (first time request)
+      const generatedSummary = await CollectionService.getAiSummarySync(id);
+      
+      if (!generatedSummary) {
+        const response: ApiResponse = {
+          success: true,
+          data: {
+            text: null,
+            message: "Summary is being generated. Please try again in a few seconds.",
+          },
+          message: "AI summary generation triggered",
+        };
+        res.json(response);
+        return;
+      }
+
+      const response: ApiResponse = {
+        success: true,
+        data: { text: generatedSummary },
+        message: "AI summary fetched successfully",
+      };
+      res.json(response);
+      return;
+    }
+
+    // Get summary (triggers background generation if stale)
+    const summaryText = await CollectionService.getAiSummary(id, forceRefresh);
 
     const response: ApiResponse = {
       success: true,

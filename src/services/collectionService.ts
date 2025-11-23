@@ -6,6 +6,7 @@ import {
 } from "../types";
 import { CollectionRepository } from "../repositories/collectionRepository";
 import { CommentRepository } from "../repositories/commentRepository";
+import { triggerSummaryGeneration, getSummarySync } from "./aiService";
 
 import QRCode from "qrcode";
 import { supabase } from "../config/supabase";
@@ -84,8 +85,71 @@ export class CollectionService {
     );
   }
 
-  static async getAiSummary(collectionId: string): Promise<string | null> {
-    return await CollectionRepository.getAiSummaryText(collectionId);
+  static async getAiSummary(
+    collectionId: string,
+    forceRefresh: boolean = false
+  ): Promise<string | null> {
+    // Check if collection exists
+    const collection = await CollectionRepository.findById(collectionId);
+    if (!collection) {
+      throw new Error("Collection not found");
+    }
+
+    // Get summary metadata
+    const meta = await CollectionRepository.getAiSummaryMeta(collectionId);
+    if (!meta) {
+      return null;
+    }
+
+    const { ai_summary_text, last_summary_generated_at } = meta;
+
+    // If force refresh, trigger generation and return existing or wait
+    if (forceRefresh) {
+      // Trigger async generation
+      triggerSummaryGeneration(collectionId);
+      // Return existing summary if available, otherwise return null
+      return ai_summary_text;
+    }
+
+    // Check if summary exists and is fresh
+    if (ai_summary_text && last_summary_generated_at) {
+      // Check if summary is stale (newer comments exist)
+      const latestCommentTs = await CollectionRepository.getLatestCommentTimestamp(
+        collectionId
+      );
+
+      if (latestCommentTs) {
+        const summaryDate = new Date(last_summary_generated_at);
+        const commentDate = new Date(latestCommentTs);
+
+        // If summary is newer than latest comment, return cached
+        if (summaryDate > commentDate) {
+          return ai_summary_text;
+        }
+      } else {
+        // No comments, return existing summary
+        return ai_summary_text;
+      }
+    }
+
+    // Summary is stale or doesn't exist - trigger generation in background
+    // Return existing summary immediately (or null if none exists)
+    triggerSummaryGeneration(collectionId);
+    return ai_summary_text;
+  }
+
+  /**
+   * Get AI summary synchronously (waits for generation)
+   * Use this only if you really need to wait for the summary
+   */
+  static async getAiSummarySync(collectionId: string): Promise<string | null> {
+    // Check if collection exists
+    const collection = await CollectionRepository.findById(collectionId);
+    if (!collection) {
+      throw new Error("Collection not found");
+    }
+
+    return await getSummarySync(collectionId);
   }
 
   static async likeCollection(collectionId: string): Promise<Collection> {
