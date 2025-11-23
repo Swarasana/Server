@@ -61,4 +61,13 @@ export class UserService {
   static async editProfile(userId: string, data: any) {
     return await UserRepository.update(userId, data);
   }
+
+  static async addPoints(userId: string, points: number) {
+    const user = await UserRepository.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const newPoints = (user.points || 0) + points;
+
+    return await UserRepository.update(userId, { points: newPoints });
+  }
 }

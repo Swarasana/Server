@@ -42,4 +42,22 @@ export class UserController {
       return res.status(400).json({ success: false, message: e.message });
     }
   }
+
+  static async addPoints(req: Request, res: Response) {
+    try {
+      const userId = (req as any).userId;
+      const { points } = req.body;
+
+      if (!points || typeof points !== "number") {
+        return res
+          .status(400)
+          .json({ success: false, message: "Points must be a number" });
+      }
+
+      const updated = await UserService.addPoints(userId, points);
+      return res.json({ success: true, user: updated });
+    } catch (e: any) {
+      return res.status(400).json({ success: false, message: e.message });
+    }
+  }
 }

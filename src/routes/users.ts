@@ -9,5 +9,6 @@ router.post("/login", UserController.login);
 
 router.get("/me", auth, UserController.getProfile);
 router.put("/me", auth, UserController.editProfile);
+router.post("/me/addPoints", auth, UserController.addPoints);
 
 export default router;
