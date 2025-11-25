@@ -25,7 +25,7 @@ export const ttsProxy = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { text, lang, voice, format_ } = req.body;
+    const { text, lang, voice, voice_type, format_ } = req.body;
 
     if (!text) {
       const response: ApiResponse = {
@@ -42,6 +42,7 @@ export const ttsProxy = async (
     formData.append("text", text);
     formData.append("lang", lang || "id-ID");
     if (voice) formData.append("voice", voice);
+    if (voice_type) formData.append("voice_type", voice_type);
     formData.append("format_", format_ || "ogg");
 
     // Get headers from form-data
