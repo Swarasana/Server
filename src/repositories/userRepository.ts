@@ -81,8 +81,6 @@ export class UserRepository {
 
     if (error) throw error;
 
-    console.log(JSON.stringify(data, null, 2));
-
     return data.map((c) => {
       const collection = Array.isArray(c.collections)
         ? c.collections[0]

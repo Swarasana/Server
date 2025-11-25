@@ -31,7 +31,6 @@ export class CollectionService {
         upsert: true,
       });
 
-    if (uploadError) console.log(uploadError);
     if (uploadError) throw uploadError;
 
     const qrUrl = supabase.storage.from("qr-codes").getPublicUrl(fileName)
