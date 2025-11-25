@@ -61,7 +61,15 @@ export const updateCollection = async (
 ) => {
   try {
     const { id } = req.params;
-    if (!id) throw new Error("Collection ID is required");
+    if (!id) {
+      throw new BadRequestError("Collection ID is required");
+    }
+
+    // Validate collection exists
+    const existingCollection = await CollectionService.getById(id);
+    if (!existingCollection) {
+      throw new NotFoundError("Collection");
+    }
 
     const data = await CollectionService.update(id, req.body);
     res.json({ success: true, data, message: "Collection updated" });

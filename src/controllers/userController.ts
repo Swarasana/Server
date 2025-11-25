@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
+import { BadRequestError } from "../utils/errors";
 
 export class UserController {
   static async register(req: Request, res: Response) {
@@ -13,12 +14,15 @@ export class UserController {
 
   static async login(req: Request, res: Response) {
     try {
-      if (!req.body) throw new Error("Missing request body");
+      if (!req.body) {
+        throw new BadRequestError("Missing request body");
+      }
 
       const { username, password } = req.body;
 
-      if (!username || !password)
-        throw new Error("Masukkan username dan password Anda.");
+      if (!username || !password) {
+        throw new BadRequestError("Masukkan username dan password Anda.");
+      }
 
       const data = await UserService.login(username, password);
       return res.json({ success: true, ...data });

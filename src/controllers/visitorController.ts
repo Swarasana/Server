@@ -1,13 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { VisitorService } from '../services/visitorService';
+import { CollectionService } from '../services/collectionService';
 import { ApiResponse } from '../types';
-import { BadRequestError } from '../utils/errors';
+import { BadRequestError, NotFoundError } from '../utils/errors';
 
 export const recordVisit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
     if (!id) {
       throw new BadRequestError('Collection ID is required');
+    }
+
+    // Validate collection exists
+    const collection = await CollectionService.getById(id);
+    if (!collection) {
+      throw new NotFoundError('Collection');
     }
 
     const { session_id } = req.body;
@@ -37,6 +44,12 @@ export const getVisitorCount = async (req: Request, res: Response, next: NextFun
       throw new BadRequestError('Collection ID is required');
     }
 
+    // Validate collection exists
+    const collection = await CollectionService.getById(id);
+    if (!collection) {
+      throw new NotFoundError('Collection');
+    }
+
     const visitorCount = await VisitorService.getVisitorCount(id);
 
     const response: ApiResponse = {
@@ -58,6 +71,12 @@ export const getVisitAnalytics = async (req: Request, res: Response, next: NextF
     const { id } = req.params;
     if (!id) {
       throw new BadRequestError('Collection ID is required');
+    }
+
+    // Validate collection exists
+    const collection = await CollectionService.getById(id);
+    if (!collection) {
+      throw new NotFoundError('Collection');
     }
 
     /* // Check if user is curator (basic role check)

@@ -126,7 +126,15 @@ export const updateExhibition = async (
 ) => {
   try {
     const { id } = req.params;
-    if (!id) throw new Error("Collection ID is required");
+    if (!id) {
+      throw new BadRequestError("Exhibition ID is required");
+    }
+
+    // Validate exhibition exists
+    const existingExhibition = await ExhibitionService.getById(id);
+    if (!existingExhibition) {
+      throw new NotFoundError("Exhibition");
+    }
 
     const data = await ExhibitionService.update(id, req.body);
     res.json({ success: true, data, message: "Exhibition updated" });
@@ -142,7 +150,15 @@ export const addCollectionToExhibition = async (
 ) => {
   try {
     const { id } = req.params; // exhibition id
-    if (!id) throw new Error("Collection ID is required");
+    if (!id) {
+      throw new BadRequestError("Exhibition ID is required");
+    }
+
+    // Validate exhibition exists
+    const exhibition = await ExhibitionService.getById(id);
+    if (!exhibition) {
+      throw new NotFoundError("Exhibition");
+    }
 
     const data = await ExhibitionService.addCollection(id, req.body);
     res.json({
@@ -162,7 +178,15 @@ export const addCollectionsInBulk = async (
 ) => {
   try {
     const { id } = req.params; // exhibition id
-    if (!id) throw new Error("Collection ID is required");
+    if (!id) {
+      throw new BadRequestError("Exhibition ID is required");
+    }
+
+    // Validate exhibition exists
+    const exhibition = await ExhibitionService.getById(id);
+    if (!exhibition) {
+      throw new NotFoundError("Exhibition");
+    }
 
     const data = await ExhibitionService.addCollectionsBulk(
       id,

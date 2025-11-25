@@ -43,3 +43,5 @@ Thumbs.db
 
 *.ogg
 *.mp3
+
+sql/
