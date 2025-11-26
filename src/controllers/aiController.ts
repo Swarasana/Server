@@ -5,10 +5,10 @@ import multer from "multer";
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
 const AI_SERVICE_API_KEY = process.env.AI_SERVICE_API_KEY || "";
 
-// Configure multer for file uploads (memory storage for STT)
+// Configure multer for file uploads (memory storage for STT - 10MB)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 // Multer for TTS (no file upload, just form fields)
