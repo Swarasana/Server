@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "swarasana-server",
   "version": "1.0.0",
   "description": "Swarasana Server: Built with Express, Node Typescript, Docker, and Supabase",
   "main": "dist/server.js",

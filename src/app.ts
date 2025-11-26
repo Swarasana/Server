@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
+import { apiKeyAuth } from "./middleware/apiKey";
 
 import collectionsRoutes from "./routes/collections";
 import commentsRoutes from "./routes/comments";
@@ -43,15 +44,25 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Handle favicon.ico requests to prevent 404 errors
+app.get("/favicon.ico", (_, res) => {
+  res.status(204).send();
+});
+
 app.get("/api", (_, res) => {
   res.json({
     success: true,
+    message: "Swarasana API",
     endpoints: {
       health: "/health",
       collections: "/api/collections",
       comments: "/api/comments",
       exhibitions: "/api/exhibitions",
       levels: "/api/levels",
+      users: "/api/users",
+      visitors: "/api/visitors",
+      merch: "/api/merch",
+      ai: "/api/ai"
     },
     documentation: {
       collections: {
@@ -107,6 +118,9 @@ app.get("/api", (_, res) => {
     },
   });
 });
+
+// Apply API key authentication to all /api routes
+app.use("/api", apiKeyAuth);
 
 app.use("/api/collections", collectionsRoutes);
 app.use("/api/comments", commentsRoutes);
